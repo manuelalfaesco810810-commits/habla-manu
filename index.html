@@ -2,38 +2,60 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HablaManu - App Celular</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HablaManu</title>
 <style>
-  *{box-sizing:border-box}
-  body{font-family:Arial; background:#0d0d0d; color:white; margin:0; padding:0; padding-bottom:90px}
-  .header{background:#00ff88; color:#000; padding:18px 10px; text-align:center; position:sticky; top:0; z-index:10}
-  .header h1{margin:0; font-size:24px}
-  .cont{padding:12px}
-  .card{background:#1e1e1e; border-radius:16px; padding:14px; margin-bottom:12px}
-  textarea{width:100%; height:170px; border-radius:12px; padding:12px; font-size:18px; border:2px solid #333; background:#111; color:white; outline:none}
-  select{width:100%; padding:14px; border-radius:12px; font-size:16px; background:#111; color:white; border:1px solid #333}
-  .label{font-size:14px; color:#aaa; margin:10px 0 4px; display:block}
-  input[type=range]{width:100%; height:35px; accent-color:#00ff88}
-  .emociones{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px}
-  .emociones button{padding:16px 5px; border:none; border-radius:14px; font-size:16px; font-weight:bold; cursor:pointer}
-  .b-normal{background:#00ff88} .b-asombro{background:#ffcc00} .b-feliz{background:#ff66aa; color:white} .b-triste{background:#66aaff} .b-enojado{background:#ff4444; color:white} .b-susurro{background:#999} .b-robot{background:#00ccff} .b-narrar{background:#a066ff; color:white}
-  .botonera{position:fixed; bottom:0; left:0; right:0; background:#1e1e1e; padding:10px; display:flex; gap:10px; border-top:1px solid #333}
-  .botonera button{flex:1; padding:16px; border:none; border-radius:14px; font-size:19px; font-weight:bold}
-  .hablar{background:#00ff88} .parar{background:#ff4444; color:white}
+body{background:#000;color:#fff;font-family:Arial;padding:12px;margin:0}
+h1{background:#00ff88;color:#000;text-align:center;padding:16px;margin:-12px -12px 12px;font-size:26px}
+textarea{width:100%;height:150px;background:#111;color:#fff;font-size:22px;padding:12px;border-radius:12px;border:2px solid #333;box-sizing:border-box}
+button{width:100%;padding:16px;font-size:20px;border-radius:12px;border:none;margin-top:10px;font-weight:bold}
+.verde{background:#00ff88;color:#000}
+.amarillo{background:#ffcc00;color:#000}
+select{width:100%;padding:12px;font-size:18px;background:#111;color:#fff;border-radius:10px;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="header"><h1>🎤 HablaManu</h1><p>Tu app que habla, Manu - Para Celular</p></div>
-<div class="cont">
-  <div class="card">
-    <textarea id="texto" placeholder="Escribe o pega tu texto aquí, Manu...">¡No manches, Manu! ¿En serio pasó eso? ¡No lo puedo creer! ¡Está increíble!</textarea>
-    <div style="text-align:right; font-size:13px; color:#aaa"><span id="contador">0</span> caracteres</div>
-    <button onclick="pegarTexto()" style="width:100%; padding:12px; border-radius:12px; background:#333; color:white; border:none; margin-top:8px; font-size:15px;">📋 Pegar lo que copié</button>
-  </div>
-  <div class="card">
-    <span class="label">🗣️ VOZ - Elige, Manu:</span>
-    <select id="voces"></select>
-    <button onclick="probarVozActual()" style="width:100%; padding:12px; margin-top:8px; border-radius:12px; background:#00ff88; border:none; font-weight:bold;">🔊 Probar esta voz</button>
-    <span class="label">⚡ Velocidad: <b id="vVelocidad" style="color:white">1.0</b></span>
-    <input
+<h1>🎤 HablaManu<br><span style="font-size:16px">Tu app que habla, Manu</span></h1>
+<textarea id="texto" placeholder="Escribe aquí, Manu...">Hola, Manu. Ya hablo, Manu.</textarea>
+<p id="contador">0 caracteres</p>
+<button class="amarillo" onclick="cargarVoces()">🔄 Recargar Voces</button>
+<select id="voces"></select>
+<button class="verde" onclick="hablar()">🔊 HABLAR</button>
+<button class="verde" onclick="probar()">🔊 Probar esta voz</button>
+<script>
+let voces=[];
+let texto=document.getElementById('texto');
+let sel=document.getElementById('voces');
+function contar(){document.getElementById('contador').innerText=texto.value.length+' caracteres';}
+texto.addEventListener('input',contar); contar();
+function cargarVoces(){
+  voces=speechSynthesis.getVoices();
+  sel.innerHTML='';
+  let filtradas=voces.filter(v=>v.lang.toLowerCase().includes('es'));
+  let lista=filtradas.length?filtradas:voces;
+  lista.forEach((v,i)=>{
+    let o=document.createElement('option');
+    o.value=i; o.text=v.name+' - '+v.lang;
+    sel.appendChild(o);
+  });
+  if(!lista.length){
+    let o=document.createElement('option'); o.text='Usar voz por defecto de Google';
+    sel.appendChild(o);
+  }
+  alert('Voces encontradas: '+voces.length);
+}
+function hablar(){
+  speechSynthesis.cancel();
+  let u=new SpeechSynthesisUtterance(texto.value);
+  u.lang='es-MX'; u.rate=1;
+  let filtradas=voces.filter(v=>v.lang.toLowerCase().includes('es'));
+  if(filtradas.length) u.voice=filtradas[sel.selectedIndex]||filtradas[0];
+  speechSynthesis.speak(u);
+}
+function probar(){hablar();}
+speechSynthesis.onvoiceschanged=cargarVoces;
+setTimeout(cargarVoces,500);
+setTimeout(cargarVoces,1500);
+</script>
+</body>
+</html>
