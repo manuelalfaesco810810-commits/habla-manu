@@ -2,86 +2,46 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HablaManu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HablaManu - Capítulo 1</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:12px;margin:0}
-h1{background:#00ff88;color:#000;text-align:center;padding:16px;margin:-12px -12px 12px;font-size:26px}
-textarea{width:100%;height:150px;background:#111;color:#fff;font-size:22px;padding:12px;border-radius:12px;border:2px solid #333;box-sizing:border-box}
-button{width:100%;padding:16px;font-size:20px;border-radius:12px;border:none;margin-top:10px;font-weight:bold}
-.verde{background:#00ff88;color:#000}
-.amarillo{background:#ffcc00;color:#000}
-.morado{background:#b388ff;color:#000}
-select{width:100%;padding:12px;font-size:18px;background:#111;color:#fff;border-radius:10px;margin-top:10px}
-#estado{text-align:center;margin-top:10px;color:#ffcc00}
+body{margin:0;font-family:Arial;background:#111;color:white;text-align:center;padding:20px}
+.caja{max-width:500px;margin:auto;background:#1e1e1e;border-radius:20px;padding:25px}
+h1{color:#ffcc00;font-size:32px;margin:5px}
+h2{color:#ffcc00}
+.boton{background:#ffcc00;color:black;border:none;padding:18px 30px;font-size:20px;font-weight:bold;border-radius:50px;cursor:pointer;width:100%}
+.texto{text-align:left;line-height:1.7;font-size:17px;background:#2a2a2a;padding:18px;border-radius:15px;white-space:pre-line}
+audio{width:100%;margin-top:15px}
 </style>
 </head>
 <body>
-<h1>🎤 HablaManu<br><span style="font-size:16px">Tu app que habla, Manu</span></h1>
-<textarea id="texto" placeholder="Escribe aquí, Manu...">Hola, Manu. Ya hablo, Manu. Y ahora también me descargo, Manu.</textarea>
-<p id="contador">0 caracteres</p>
-<button class="amarillo" onclick="cargarVoces()">🔄 Recargar Voces</button>
-<select id="voces"></select>
-<button class="verde" onclick="hablar()">🔊 HABLAR</button>
-<button class="morado" onclick="descargarMP3()">⬇️ DESCARGAR MP3</button>
-<p id="estado"></p>
-<script>
-let voces=[];
-let texto=document.getElementById('texto');
-let sel=document.getElementById('voces');
-function contar(){document.getElementById('contador').innerText=texto.value.length+' caracteres';}
-texto.addEventListener('input',contar); contar();
-function cargarVoces(){
-  voces=speechSynthesis.getVoices();
-  sel.innerHTML='';
-  let filtradas=voces.filter(v=>v.lang.toLowerCase().includes('es'));
-  let lista=filtradas.length?filtradas:voces;
-  lista.forEach((v,i)=>{
-    let o=document.createElement('option');
-    o.value=i; o.text=v.name+' - '+v.lang;
-    sel.appendChild(o);
-  });
-  if(!lista.length){
-    let o=document.createElement('option'); o.text='Usar voz por defecto de Google';
-    sel.appendChild(o);
-  }
-}
-function hablar(){
-  speechSynthesis.cancel();
-  let u=new SpeechSynthesisUtterance(texto.value);
-  u.lang='es-MX'; u.rate=1;
-  let filtradas=voces.filter(v=>v.lang.toLowerCase().includes('es'));
-  if(filtradas.length) u.voice=filtradas[sel.selectedIndex]||filtradas[0];
-  speechSynthesis.speak(u);
-}
-async function descargarMP3(){
-  let t=texto.value.trim();
-  if(!t){alert('Manu, escribe algo primero, Manu'); return;}
-  document.getElementById('estado').innerText='Manu, preparando tu MP3, Manu... espera, Manu...';
-  // Google TTS solo acepta pedazos de 200 letras, Manu. Lo partimos, Manu.
-  let pedazos=[];
-  while(t.length>0){ pedazos.push(t.slice(0,190)); t=t.slice(190); }
-  try{
-    let audios=[];
-    for(let p of pedazos){
-      let url='https://translate.google.com/translate_tts?ie=UTF-8&q='+encodeURIComponent(p)+'&tl=es-MX&client=tw-ob';
-      let r=await fetch(url);
-      let b=await r.blob();
-      audios.push(b);
-    }
-    let final=new Blob(audios,{type:'audio/mpeg'});
-    let a=document.createElement('a');
-    a.href=URL.createObjectURL(final);
-    a.download='HablaManu.mp3';
-    a.click();
-    document.getElementById('estado').innerText='¡Listo, Manu! ¡Ya se descargó, Manu! Búscalo en Descargas, Manu.';
-  }catch(e){
-    document.getElementById('estado').innerText='Manu, no se pudo descargar, Manu. Intenta otra vez con internet, Manu.';
-  }
-}
-speechSynthesis.onvoiceschanged=cargarVoces;
-setTimeout(cargarVoces,500);
-setTimeout(cargarVoces,1500);
-</script>
+<div class="caja">
+<p>🎙️ HABLAMANU</p>
+<h1>Capítulo 1</h1>
+<h2>¿Cómo conocí el CBTis 36?</h2>
+<p>Monclova, Coahuila - Verano 1996 - 37°C</p>
+
+<audio controls src="capitulo1.mp3"></audio>
+<br><br>
+<button class="boton" onclick="document.querySelector('audio').play()">▶ ESCUCHAR CON MI VOZ</button>
+
+<div class="texto">
+Hola, bienvenidos a HablaManu. Esto se llama ¿Cómo conocí el CBTis 36?
+
+Yo soy Manu, quien les cuenta la historia de cómo fue cuando llegamos a estudiar al CBTis, en el verano de mil novecientos noventa y seis, en la ciudad de Monclova, Coahuila. Treinta y siete grados centígrados, aproximadamente. Temperatura normal para Monclova.
+
+Estábamos en una época chida de nuestra adolescencia. Acabábamos de salir de la secundaria, con la mochila rota, muchos sueños y ganas de entrar a la prepa.
+
+Habíamos sido aceptados en esa prepa que la mayoría de los estudiantes, con buen promedio y con ganas de superarse, querían entrar. El CBTis es la mejor prepa de Monclova.
+
+Recuerdo cuando fuimos por los resultados. Traía las manos sudadas, todo nervioso, pero emocionado. Y cuando vi mi nombre y la palabra ACEPTADO, brinqué de emoción.
+
+Pero ahora venía lo difícil. Los cursos propedéuticos, donde íbamos a conocer a nuestros futuros compañeros. Yo iba para laboratorista clínico y estaba muy emocionado.
+
+Así fue como conocí el CBTis, mi segunda casa. Qué tiempos aquellos, qué nostalgia. Espero que les guste esta historia. Bienvenidos.
+</div>
+<br>
+<p>Hecho con mi voz real - Manu</p>
+</div>
 </body>
 </html>
