@@ -11,17 +11,20 @@ textarea{width:100%;height:150px;background:#111;color:#fff;font-size:22px;paddi
 button{width:100%;padding:16px;font-size:20px;border-radius:12px;border:none;margin-top:10px;font-weight:bold}
 .verde{background:#00ff88;color:#000}
 .amarillo{background:#ffcc00;color:#000}
+.morado{background:#b388ff;color:#000}
 select{width:100%;padding:12px;font-size:18px;background:#111;color:#fff;border-radius:10px;margin-top:10px}
+#estado{text-align:center;margin-top:10px;color:#ffcc00}
 </style>
 </head>
 <body>
 <h1>🎤 HablaManu<br><span style="font-size:16px">Tu app que habla, Manu</span></h1>
-<textarea id="texto" placeholder="Escribe aquí, Manu...">Hola, Manu. Ya hablo, Manu.</textarea>
+<textarea id="texto" placeholder="Escribe aquí, Manu...">Hola, Manu. Ya hablo, Manu. Y ahora también me descargo, Manu.</textarea>
 <p id="contador">0 caracteres</p>
 <button class="amarillo" onclick="cargarVoces()">🔄 Recargar Voces</button>
 <select id="voces"></select>
 <button class="verde" onclick="hablar()">🔊 HABLAR</button>
-<button class="verde" onclick="probar()">🔊 Probar esta voz</button>
+<button class="morado" onclick="descargarMP3()">⬇️ DESCARGAR MP3</button>
+<p id="estado"></p>
 <script>
 let voces=[];
 let texto=document.getElementById('texto');
@@ -42,7 +45,6 @@ function cargarVoces(){
     let o=document.createElement('option'); o.text='Usar voz por defecto de Google';
     sel.appendChild(o);
   }
-  alert('Voces encontradas: '+voces.length);
 }
 function hablar(){
   speechSynthesis.cancel();
@@ -52,7 +54,31 @@ function hablar(){
   if(filtradas.length) u.voice=filtradas[sel.selectedIndex]||filtradas[0];
   speechSynthesis.speak(u);
 }
-function probar(){hablar();}
+async function descargarMP3(){
+  let t=texto.value.trim();
+  if(!t){alert('Manu, escribe algo primero, Manu'); return;}
+  document.getElementById('estado').innerText='Manu, preparando tu MP3, Manu... espera, Manu...';
+  // Google TTS solo acepta pedazos de 200 letras, Manu. Lo partimos, Manu.
+  let pedazos=[];
+  while(t.length>0){ pedazos.push(t.slice(0,190)); t=t.slice(190); }
+  try{
+    let audios=[];
+    for(let p of pedazos){
+      let url='https://translate.google.com/translate_tts?ie=UTF-8&q='+encodeURIComponent(p)+'&tl=es-MX&client=tw-ob';
+      let r=await fetch(url);
+      let b=await r.blob();
+      audios.push(b);
+    }
+    let final=new Blob(audios,{type:'audio/mpeg'});
+    let a=document.createElement('a');
+    a.href=URL.createObjectURL(final);
+    a.download='HablaManu.mp3';
+    a.click();
+    document.getElementById('estado').innerText='¡Listo, Manu! ¡Ya se descargó, Manu! Búscalo en Descargas, Manu.';
+  }catch(e){
+    document.getElementById('estado').innerText='Manu, no se pudo descargar, Manu. Intenta otra vez con internet, Manu.';
+  }
+}
 speechSynthesis.onvoiceschanged=cargarVoces;
 setTimeout(cargarVoces,500);
 setTimeout(cargarVoces,1500);
